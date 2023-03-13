@@ -1,5 +1,6 @@
 from PyQt6.QtGui import QColor, QPixmap, QMouseEvent, QPaintEvent, QPainter, QFont
 from PyQt6.QtWidgets import QLabel
+from PyQt6.QtCore import Qt
 
 from qrcode import QRCode
 
@@ -15,8 +16,7 @@ class MyLabel(QLabel):
         self.__pixmap = QPixmap("./instruction.png")
 
     def size_hint(self):
-        # Aufgabe 1
-        pass
+        return self.__pixmap.size()
 
     def save_image(self, file_name):
         self.__save_file_name = file_name
@@ -24,10 +24,17 @@ class MyLabel(QLabel):
         self.update()
 
     def load_image(self, file_name):
-        # Aufgabe 2
-        pass
+        self.__pixmap = QPixmap(file_name)
 
-    #Aufgabe 3
+        self.update()
+
+    def mousePressEvent(self, ev: QMouseEvent) -> None:
+        super(MyLabel, self).mousePressEvent(ev)
+
+        if ev.type() == Qt.MouseButton.LeftButton:
+            self.__pos = ev.pos()
+
+            self.update()
 
     def print_product_name(self, text):
         self.__product_name = text
@@ -47,7 +54,6 @@ class MyLabel(QLabel):
         self.update()
 
     def paintEvent(self, a0: QPaintEvent) -> None:
-        # Aufgabe 6
         painter = QPainter()
 
         if self.__save_file_name:
@@ -63,14 +69,16 @@ class MyLabel(QLabel):
 
         if self.__pos:
             if self.__product_name:
+                painter.setPen(QColor("black"))
+                painter.setFont(QFont("Courier", 25))
                 painter.drawText(self.__pos, self.__product_name)
             else:
                 painter.setPen(QColor("red"))
                 painter.drawEllipse(self.__pos, 20, 20)
 
         if self.__qr_code:
-            width = 0
-            height = 0
+            width = self.__pixmap.size().width() - self.__qr_code.size().width()
+            height = self.__pixmap.size().height() - self.__qr_code.size().height()
 
             painter.drawPixmap(width, height, self.__qr_code)
 

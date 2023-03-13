@@ -41,9 +41,13 @@ class MyMainWindow(QMainWindow):
             self.__my_label.print_product_name(text)
 
     def set_qr_value(self):
-        # Aufgabe 5
-        pass
+        url, ok = QInputDialog.getText(self, "Link", "Link zum QR-Code: ")
+
+        if ok and url:
+            self.__my_label.generate_qr(url)
 
     def save_file(self):
-        # Aufgabe 4
-        pass
+        file_name, _ = QFileDialog.getSaveFileName(caption="Speicherort und -name auswählen")
+
+        if file_name:
+            self.__my_label.save_image(file_name)
